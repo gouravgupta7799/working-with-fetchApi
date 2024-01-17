@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useCallback ,useMemo} from 'react';
-
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import AddMovie from './components/AddMovie';
 import MoviesList from './components/MoviesList';
 import './App.css';
 
@@ -7,10 +7,10 @@ function App() {
   const [dummyMovies, setDummyMovies] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [FormShow, setFormShow] = useState(false);
 
   const movieHandler = useCallback(async () => {
     try {
-      console.log(344)
       setLoading(true)
       setError(null)
       let newData = await fetch('https://swapi.dev/api/films')
@@ -53,14 +53,24 @@ function App() {
   if (isLoading) {
     content = <p>Loading....</p>
   }
+  function showForm() {
+    setFormShow(!FormShow)
+  }
+  function addMovieHandler(movie) {
+    console.log(movie)
+    setFormShow(!FormShow)
+  }
 
   useEffect(() => {
-    console.log(12)
     movieHandler()
   }, [movieHandler])
 
   return (
     <React.Fragment>
+      <section>
+        {!FormShow && <button onClick={showForm}>Add new Movie </button>}
+        {FormShow && <AddMovie onAddMovie={addMovieHandler} />}
+      </section>
       <section>
         <button onClick={movieHandler}>Fetch Movies</button>
       </section>
