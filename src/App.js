@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useCallback ,useMemo} from 'react';
 
 import MoviesList from './components/MoviesList';
 import './App.css';
@@ -8,8 +8,9 @@ function App() {
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const movieHandler = async () => {
+  const movieHandler = useCallback(async () => {
     try {
+      console.log(344)
       setLoading(true)
       setError(null)
       let newData = await fetch('https://swapi.dev/api/films')
@@ -28,25 +29,35 @@ function App() {
       })
       setDummyMovies(transformedMovies)
     }
-    catch(error) {
+    catch (error) {
       setError(error.message)
     }
     setLoading(false)
-  }
+  }, [])
   let content = <p>Found no moives.</p>
-  if (dummyMovies.length > 0) {
+
+  const moviesListMemo = useMemo(() => {
+    return <MoviesList movies={dummyMovies} />;
+  }, [dummyMovies])
+
+  if (!isLoading && dummyMovies.length > 0 && moviesListMemo) {
     content = <MoviesList movies={dummyMovies} />
   }
   if (error) {
     content = <div>
       <p>{error}</p>
-      <button style={{color:'white', background:'red'}}>X</button>
-      </div>
+      <button style={{ color: 'white', background: 'red' }}>X</button>
+    </div>
 
   }
   if (isLoading) {
     content = <p>Loading....</p>
   }
+
+  useEffect(() => {
+    console.log(12)
+    movieHandler()
+  }, [movieHandler])
 
   return (
     <React.Fragment>
